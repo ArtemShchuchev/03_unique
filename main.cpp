@@ -40,7 +40,7 @@ int main()
     unique_ptr<S>unicPtr(new S(3, 2.3));
     std::cout << "unicPtr: " << *unicPtr << "\n";
 
-    rawPtr = unicPtr.my_release();
+    rawPtr = unicPtr.release();
     std::cout << "rawPtr: " << *rawPtr << "\n";
     
     try

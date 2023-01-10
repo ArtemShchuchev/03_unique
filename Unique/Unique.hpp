@@ -12,7 +12,7 @@ public:
 
 	unique_ptr& operator= (const unique_ptr&) = delete;	// оператор присваивания
 	T operator* ();		// оператор разименования
-	T* my_release();	// освобождает владение и возвращает сырой указатель.
+	T* release();	// освобождает владение и возвращает сырой указатель.
 };
 
 
@@ -28,7 +28,7 @@ inline unique_ptr<T>::~unique_ptr()
 	std::cout << "destructor\n";
 	if (ptr)
 	{
-		std::cout << "delete...\n";
+		std::cout << "delete ptr...\n";
 		delete ptr;
 	}
 }
@@ -41,7 +41,7 @@ inline T unique_ptr<T>::operator*()
 }
 
 template<class T>
-inline T* unique_ptr<T>::my_release()
+inline T* unique_ptr<T>::release()
 {
 	auto temp = new T;
 	*temp = *ptr;
