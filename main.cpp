@@ -40,8 +40,8 @@ int main()
     rawPtr = &s;
     std::cout << "rawPtr: " << *rawPtr << "\n";
 
-    unique_ptr<S>unicPtr(rawPtr);
-    //unique_ptr<S>unicPtr(new S(3, 2.3));
+    //unique_ptr<S>unicPtr(rawPtr);
+    unique_ptr<S>unicPtr(new S(3, 2.3));
     std::cout << "unicPtr: " << *unicPtr << "\n";
 
     rawPtr = unicPtr.release();
