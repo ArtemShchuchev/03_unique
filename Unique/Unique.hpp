@@ -7,45 +7,67 @@ class unique_ptr
 {
 private:
 	T* ptr = nullptr;
+
+	bool ptrIsDynamic(T*);	// true если T* указывает на динамическую пам€ть
+	void deletePtr(T*);		// при необходимости освобождает пам€ть
+
 public:
-	unique_ptr(T*);		//  онструктор, принимающий сырой указатель
+	unique_ptr(T*);	//  онструктор, принимающий сырой указатель
 	unique_ptr(const unique_ptr &) = delete;	// конструктор копировани€
-	~unique_ptr();		// деструктор
+	~unique_ptr();	// деструктор
 
 	unique_ptr& operator= (const unique_ptr&) = delete;	// оператор присваивани€
-	T operator* ();		// оператор разименовани€
+	T operator* ();	// оператор разименовани€
 	T* release();	// освобождает владение и возвращает сырой указатель.
 };
 
 
 
 template<class T>
-inline unique_ptr<T>::unique_ptr(T* rawPtr) : ptr(new T)
+inline bool unique_ptr<T>::ptrIsDynamic(T* _ptr)
 {
-	std::cout << "Constructor:\n";
-	*ptr = *rawPtr;
-	if ( ( reinterpret_cast<std::uintptr_t>(rawPtr) - reinterpret_cast<std::uintptr_t>(&rawPtr) ) > 500)
+	// abs - вроде не нужен, ну на вс€кий случай
+	// если между адресом объекта и адресом указател€ более 100 int
+	// то скорей всего объект расположен в динамической пам€ти
+	// но это не точно ))
+	return (abs((__int64*)_ptr - (__int64*)&_ptr) > 100);
+}
+
+template<class T>
+inline void unique_ptr<T>::deletePtr(T* _ptr)
+{
+	if (_ptr)
 	{
-		std::cout << "delete ptr...\n";
-		delete rawPtr;
+		if (ptrIsDynamic(_ptr))
+		{
+			std::cout << "release dynamic memory...\n";
+			delete _ptr;
+		}
+		_ptr = nullptr;
 	}
-	rawPtr = nullptr;
+}
+
+template<class T>
+inline unique_ptr<T>::unique_ptr(T* rawPtr) : ptr( ptrIsDynamic(rawPtr) ? new T : nullptr)
+{
+	std::cout << "-= Constructor =-\n";
+	if (ptrIsDynamic(rawPtr)) *ptr = *rawPtr;
+	else ptr = rawPtr;
+
+	deletePtr(rawPtr);
 }
 
 template<class T>
 inline unique_ptr<T>::~unique_ptr()
 {
-	std::cout << "Destructor:\n";
-	if (ptr)
-	{
-		std::cout << "delete ptr...\n";
-		delete ptr;
-	}
+	std::cout << "-= Destructor =-\n";
+	deletePtr(ptr);
 }
 
 template<class T>
 inline T unique_ptr<T>::operator*()
 {
+	// почему € не вижу строчки "ќбъект не существует!"????
 	if (!ptr) throw std::runtime_error("ќбъект не существует!");
 	return *ptr;
 }
@@ -53,10 +75,10 @@ inline T unique_ptr<T>::operator*()
 template<class T>
 inline T* unique_ptr<T>::release()
 {
+	std::cout << "-= Release =-\n";
 	auto temp = new T;
 	*temp = *ptr;
-	std::cout << "Release: delete ptr...\n";
-	delete ptr;
+	deletePtr(ptr);
 	ptr = nullptr;
 
 	return temp;

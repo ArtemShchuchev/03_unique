@@ -40,21 +40,24 @@ int main()
     rawPtr = &s;
     std::cout << "rawPtr: " << *rawPtr << "\n";
 
-    //unique_ptr<S>unicPtr(rawPtr);
-    unique_ptr<S>unicPtr(new S(3, 2.3));
+    //unique_ptr<S>unicPtr(rawPtr);         // автоматическая память
+    unique_ptr<S>unicPtr(new S(3, 2.3));    // динамическая память
     std::cout << "unicPtr: " << *unicPtr << "\n";
 
-    rawPtr = unicPtr.release();
-    std::cout << "rawPtr: " << *rawPtr << "\n";
+    S* rawPtr2 = unicPtr.release();
+    std::cout << "rawPtr2: " << *rawPtr2 << "\n";
     
+    delete rawPtr2;
+
     try
     {
         // объект unicPtr "пустой"
         std::cout << "unicPtr: " << *unicPtr << "\n";
     }
-    catch (const std::runtime_error& err)
+    catch (const std::exception& err)
     {
-        std::cout << "Ошибка! " << err.what() << "\n";
+        std::cout << "\nОшибка типа: " << typeid(err).name() << "\n";
+        std::cout << err.what() << "\n";
     }
 
     return 0;
