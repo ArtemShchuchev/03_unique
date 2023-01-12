@@ -53,7 +53,7 @@ int main()
 
     try
     {
-        // объект unicPtr "пустой"
+        // указатель unicPtr = nullptr
         std::cout << "unicPtr: " << *unicPtr;
     }
     catch (const std::exception& err)
