@@ -1,4 +1,6 @@
 #pragma once
+#include <stdint.h>
+#include <math.h>
 
 template<class T>
 class unique_ptr
@@ -18,14 +20,22 @@ public:
 
 
 template<class T>
-inline unique_ptr<T>::unique_ptr(T* rawPtr) : ptr(rawPtr)
+inline unique_ptr<T>::unique_ptr(T* rawPtr) : ptr(new T)
 {
+	std::cout << "Constructor:\n";
+	*ptr = *rawPtr;
+	if ( ( reinterpret_cast<std::uintptr_t>(rawPtr) - reinterpret_cast<std::uintptr_t>(&rawPtr) ) > 500)
+	{
+		std::cout << "delete ptr...\n";
+		delete rawPtr;
+	}
+	rawPtr = nullptr;
 }
 
 template<class T>
 inline unique_ptr<T>::~unique_ptr()
 {
-	std::cout << "destructor\n";
+	std::cout << "Destructor:\n";
 	if (ptr)
 	{
 		std::cout << "delete ptr...\n";
@@ -45,6 +55,7 @@ inline T* unique_ptr<T>::release()
 {
 	auto temp = new T;
 	*temp = *ptr;
+	std::cout << "Release: delete ptr...\n";
 	delete ptr;
 	ptr = nullptr;
 

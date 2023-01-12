@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include "SecondFunk/SecondaryFunction.h"
 #include "Unique/Unique.hpp"
@@ -34,10 +35,13 @@ int main()
 {
     printHeader("Задача 3*. std::unique_ptr своими руками");   // заголовок
 
-    auto rawPtr = new S(5, 16.58);
+    S* rawPtr(nullptr);
+    S s(5, 16.58);
+    rawPtr = &s;
     std::cout << "rawPtr: " << *rawPtr << "\n";
 
-    unique_ptr<S>unicPtr(new S(3, 2.3));
+    unique_ptr<S>unicPtr(rawPtr);
+    //unique_ptr<S>unicPtr(new S(3, 2.3));
     std::cout << "unicPtr: " << *unicPtr << "\n";
 
     rawPtr = unicPtr.release();
