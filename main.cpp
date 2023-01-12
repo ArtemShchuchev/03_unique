@@ -38,26 +38,32 @@ int main()
     S* rawPtr(nullptr);
     S s(5, 16.58);
     rawPtr = &s;
-    std::cout << "rawPtr: " << *rawPtr << "\n";
+    std::cout << "rawPtr: " << *rawPtr;
 
     //unique_ptr<S>unicPtr(rawPtr);         // автоматическая память
     unique_ptr<S>unicPtr(new S(3, 2.3));    // динамическая память
-    std::cout << "unicPtr: " << *unicPtr << "\n";
+    std::cout << "unicPtr: " << *unicPtr;
+    *unicPtr = { 6, 18.3 };
+    std::cout << "unicPtr: " << *unicPtr;
 
-    S* rawPtr2 = unicPtr.release();
-    std::cout << "rawPtr2: " << *rawPtr2 << "\n";
+    S* relPtr = unicPtr.release();
+    std::cout << "relPtr: " << *relPtr;
     
-    delete rawPtr2;
+    delete relPtr;
 
     try
     {
         // объект unicPtr "пустой"
-        std::cout << "unicPtr: " << *unicPtr << "\n";
+        std::cout << "unicPtr: " << *unicPtr;
     }
     catch (const std::exception& err)
     {
         std::cout << "\nОшибка типа: " << typeid(err).name() << "\n";
         std::cout << err.what() << "\n";
+    }
+    catch (const ExeptNotPtr)
+    {
+        std::cout << "\nОшибка: Пустой указатель (nullptr)!" << "\n";
     }
 
     return 0;

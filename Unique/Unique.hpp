@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <math.h>
 
+struct ExeptNotPtr {};
+
 template<class T>
 class unique_ptr
 {
@@ -17,7 +19,7 @@ public:
 	~unique_ptr();	// деструктор
 
 	unique_ptr& operator= (const unique_ptr&) = delete;	// оператор присваивания
-	T operator* ();	// оператор разименования
+	T& operator* () const;	// оператор разименования
 	T* release();	// освобождает владение и возвращает сырой указатель.
 };
 
@@ -65,10 +67,14 @@ inline unique_ptr<T>::~unique_ptr()
 }
 
 template<class T>
-inline T unique_ptr<T>::operator*()
+inline T& unique_ptr<T>::operator*() const
 {
-	// почему я не вижу строчки "Объект не существует!"????
-	if (!ptr) throw std::runtime_error("Объект не существует!");
+	if (!ptr)
+	{
+		throw ExeptNotPtr();
+		// почему я не вижу строчки "Объект не существует!"????
+		//throw std::runtime_error("Объект не существует!");
+	}
 	return *ptr;
 }
 
