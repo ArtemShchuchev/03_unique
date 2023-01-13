@@ -35,20 +35,17 @@ int main()
 {
     printHeader("Задача 3*. std::unique_ptr своими руками");   // заголовок
 
-    S* rawPtr(nullptr);
-    S s(5, 16.58);
-    rawPtr = &s;
-    std::cout << "rawPtr: " << *rawPtr;
+    unique_ptr<S>unicPtr(new S(5, 16.58));
+    std::cout << "addr unicPtr: " << &unicPtr << " -> obj: " << unicPtr << "\n";
 
-    //unique_ptr<S>unicPtr(rawPtr);         // автоматическая память
-    unique_ptr<S>unicPtr(new S(3, 2.3));    // динамическая память
-    std::cout << "unicPtr: " << *unicPtr;
+    std::cout << "\nunicPtr: " << *unicPtr;
     *unicPtr = { 6, 18.3 };
     std::cout << "unicPtr: " << *unicPtr;
-
-    S* relPtr = unicPtr.release();
-    std::cout << "relPtr: " << *relPtr;
     
+    S* relPtr = unicPtr.release();
+    std::cout << "addr  relPtr: " << &relPtr << " -> obj: " << relPtr << "\n";
+    std::cout << "Old pointer is                      -> " << unicPtr << "\n";
+
     delete relPtr;
 
     try

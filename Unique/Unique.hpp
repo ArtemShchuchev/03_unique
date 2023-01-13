@@ -10,21 +10,25 @@ class unique_ptr
 private:
 	T* ptr = nullptr;
 
-	bool ptrIsDynamic(T*);	// true если T* указывает на динамическую пам€ть
-	void deletePtr(T*);		// при необходимости освобождает пам€ть
+	//bool ptrIsDynamic(T*);	// true если T* указывает на динамическую пам€ть
+	//void deletePtr(T*);		// при необходимости освобождает пам€ть
 
 public:
-	unique_ptr(T*);	//  онструктор, принимающий сырой указатель
+	unique_ptr(T*);			//  онструктор, принимающий сырой указатель
 	unique_ptr(const unique_ptr &) = delete;	// конструктор копировани€
-	~unique_ptr();	// деструктор
+	~unique_ptr();			// деструктор
 
 	unique_ptr& operator= (const unique_ptr&) = delete;	// оператор присваивани€
+	friend std::ostream& operator<< (std::ostream& out, const unique_ptr<T>& uptr)
+	{
+		return out << uptr.ptr;
+	}
 	T& operator* () const;	// оператор разименовани€
-	T* release();	// освобождает владение и возвращает сырой указатель.
+	T* release();			// освобождает владение и возвращает сырой указатель.
 };
 
 
-
+/*
 template<class T>
 inline bool unique_ptr<T>::ptrIsDynamic(T* _ptr)
 {
@@ -48,22 +52,20 @@ inline void unique_ptr<T>::deletePtr(T* _ptr)
 		_ptr = nullptr;
 	}
 }
+*/
 
 template<class T>
-inline unique_ptr<T>::unique_ptr(T* rawPtr) : ptr( ptrIsDynamic(rawPtr) ? new T : nullptr)
+inline unique_ptr<T>::unique_ptr(T* rawPtr) : ptr(rawPtr)
 {
 	std::cout << "-= Constructor =-\n";
-	if (ptrIsDynamic(rawPtr)) *ptr = *rawPtr;
-	else ptr = rawPtr;
-
-	deletePtr(rawPtr);
 }
 
 template<class T>
 inline unique_ptr<T>::~unique_ptr()
 {
 	std::cout << "-= Destructor =-\n";
-	deletePtr(ptr);
+	//deletePtr(ptr);
+	delete ptr;
 }
 
 template<class T>
@@ -72,8 +74,8 @@ inline T& unique_ptr<T>::operator*() const
 	if (!ptr)
 	{
 		throw ExeptNotPtr();
-		// почему € не вижу строчки "ќбъект не существует!"????
-		//throw std::runtime_error("ќбъект не существует!");
+		// почему € не вижу строчки "ѕустой указатель (nullptr)!"????
+		//throw std::runtime_error("ѕустой указатель (nullptr)!");
 	}
 	return *ptr;
 }
@@ -82,9 +84,7 @@ template<class T>
 inline T* unique_ptr<T>::release()
 {
 	std::cout << "-= Release =-\n";
-	auto temp = new T;
-	*temp = *ptr;
-	deletePtr(ptr);
+	T* temp(ptr);
 	ptr = nullptr;
 
 	return temp;
